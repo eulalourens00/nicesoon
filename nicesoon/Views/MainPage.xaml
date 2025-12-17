@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:draw="http://schemas.appomobi.com/drawnUi/2023/draw"
+             x:Class="nicesoon.MainPage"
+             Background="{StaticResource GradientBackground}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="10">
+        <!--верхняя плашка-->
+        <Grid RowSpacing="10" RowDefinitions="*,*">
+
+            <VerticalStackLayout Grid.Row="0">
+                <Image Source="caplya.png" Style="{StaticResource Caplya}"/>
+            </VerticalStackLayout>
+
+
+            <VerticalStackLayout Grid.Row="1">
+                    <Grid ColumnDefinitions="auto, auto" HorizontalOptions="Center">
+                <Label Text="Тихая гавань ваших" Style="{StaticResource BigLabel}" TextColor="White" Grid.Column="0"/>
+                <Label Text=" снов" Style="{StaticResource BigLabel}" Grid.Column="1"/>
+                    </Grid>
+            </VerticalStackLayout>
+        </Grid>
+        
+        <!--кнопки на инфу и логин-->
+        <VerticalStackLayout Padding="10" Spacing="10">
+
+            <Label Text="Успокойте свои сны" HorizontalOptions="Center"
+                   TextColor="{StaticResource BottomText}" />
+
+            <Grid RowSpacing="10" RowDefinitions="*, *">
+                <Button Text="Начать путь" Style="{StaticResource InfoButton}" BackgroundColor="#1430B8" Grid.Row="0"
+                        Clicked="Auth_ButtonClicked"/>
+                <Button Text="Как это работает" Style="{StaticResource InfoButton}" Grid.Row="1"/>
+            </Grid>
+        </VerticalStackLayout>
+
+        <Grid RowSpacing="10" VerticalOptions="Center" Padding="10">
+            <Image Source="window.png" Style="{StaticResource IconImage }" HorizontalOptions="Center" WidthRequest="50"/>
+        </Grid>
+
+            <!--навигация на хронику и ии-->
+        <Grid RowSpacing="10" RowDefinitions="*, *">
+            <!--хроники кнопки-->
+            <Frame Style="{StaticResource AnotherFrame}" Grid.Row="0">
+
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnDiary_Tapped"/>
+                </Frame.GestureRecognizers>
+                
+                <VerticalStackLayout Spacing="5" Padding="10">
+
+                    <Grid RowSpacing="10" RowDefinitions="*, *">
+                        <Image Source="hricon.png" Grid.Row="0" Style="{StaticResource IconImage}"/>
+                    </Grid>
+                    
+                    <Label Text="Дневник кошмаров" Style="{StaticResource HeaderText}"/>
+
+                    <Label Text="Запишите свой сон, чтобы отпустить его. 
+                               Анализируйте символы и находите скрытые смыслы в безопасном пространстве."
+                              Style="{StaticResource DiscriptionText}"/>
+                </VerticalStackLayout>
+            </Frame>
+            <!--найсон кнопка-->
+            <Frame Style="{StaticResource AnotherFrame}" Grid.Row="1">
+
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnNicesoon_Tapped"/>
+                </Frame.GestureRecognizers>
+                
+                <VerticalStackLayout Spacing="5" Padding="10">
+                    
+                    <Grid RowSpacing="10" RowDefinitions="*, *">
+                        <Image Source="iicon.png" Grid.Row="0" Style="{StaticResource IconImage}"/>
+                    </Grid>
+                    
+                    <Label Text="Анализ с Найсоном" Style="{StaticResource HeaderText}"/>
+
+                    <Label Text="Обсудите свой сон. 
+                               Получите поддержку и новые взгляды на происходящее."
+                               Style="{StaticResource DiscriptionText}"/>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+        
+        
+    </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

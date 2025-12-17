@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="nicesoon.Pages.AuthPages.LoginPage">
+    <VerticalStackLayout>
+        <Grid VerticalOptions="Center" HorizontalOptions="Center">
+            <Frame Style="{StaticResource FrameStyle}">
+                
+                <VerticalStackLayout Spacing="25" HorizontalOptions="Fill" VerticalOptions="Fill" >
+
+                    <Label Text="Войти в свой аккаунт" Style="{StaticResource BigLabels}"/>
+
+                    <VerticalStackLayout Spacing="15" HorizontalOptions="Fill" VerticalOptions="Center">
+
+                        <!-- phone -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Телефон" Style="{StaticResource DefLabels2}"/>
+                            <Entry TextChanged="OnPhoneChanhed2" Style="{StaticResource EntriesStyle}" Text="+7"/>
+                        </VerticalStackLayout>
+
+                        <!-- passw -->
+                        <VerticalStackLayout Spacing="5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Label Text="Пароль" Style="{StaticResource DefLabels2}" HorizontalOptions="Start" Grid.Column="0"/>
+                                <Label x:Name="ForgetPassword" Text="Забыли?" TextColor="{StaticResource LinksColor}" 
+                                   Style="{StaticResource DefLabels2}" HorizontalOptions="End" Grid.Column="1">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="ForgotPassword_Tapped"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+
+                            <Grid>
+                                <Entry x:Name="LoginPasswordEntry" IsPassword="True"
+                            Style="{StaticResource EntriesStyle}"/>
+
+                                <ImageButton x:Name="LoginISVisiblePassword_button" Source="showbutton.png"
+                                         Clicked="LoginISVisiblePassword_button_Clicked"
+                                         
+                            Style="{StaticResource ShowButton2}"/>
+                            </Grid>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+
+                    <!-- to main page -->
+                    <Button x:Name="Login_button" Clicked="Login_button_Clicked"
+                    Text="Войти" Style="{StaticResource ButtonStyle}"/>
+
+                    <!-- link to regist -->
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center"  Spacing="5" Margin="0,10,0,0">
+                        <Label Text="У вас нет аккаунта?" FontSize="14" TextColor="{StaticResource MiniText}"/>
+                        <Label Text="Зарегистрироваться" FontSize="14" TextColor="{StaticResource LinksColor}">
+                            
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="Register_label_Clicked"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                        
+                    </StackLayout>
+
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+    </VerticalStackLayout>
+</ContentPage>

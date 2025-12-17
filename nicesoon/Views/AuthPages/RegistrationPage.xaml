@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="nicesoon.Pages.RegistrationPage">
+    <VerticalStackLayout>
+        <Grid VerticalOptions="Center" HorizontalOptions="Center">
+            <Frame Style="{StaticResource FrameStyle}">
+                <VerticalStackLayout Spacing="25" HorizontalOptions="Fill" VerticalOptions="Fill" >
+                    <Label Text="Создать учетную запись" Style="{StaticResource BigLabels}"/>
+
+                    <!--form-->
+                    <VerticalStackLayout Spacing="15" VerticalOptions="Center" HorizontalOptions="Fill">
+
+                        <!-- name -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Имя"  Style="{StaticResource DefLabels}"/>
+                            <Entry Style="{StaticResource EntriesStyle}"/>
+                        </VerticalStackLayout>
+
+                        <!-- phone-->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Телефон"  Style="{StaticResource DefLabels}"/>
+                            <Entry TextChanged="OnPhoneChanhed" Style="{StaticResource EntriesStyle}" Text="+7"/>
+                        </VerticalStackLayout>
+
+                        <!-- passw -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Пароль"  Style="{StaticResource DefLabels}"/>
+                            <Grid>
+                                <Entry x:Name="PasswordEntry" IsPassword="True"
+                               Style="{StaticResource EntriesStyle}"/>
+
+                                <ImageButton x:Name="ISVisiblePassword_button" Style="{StaticResource ShowButton}"
+                                         Clicked="ISVisiblePassword_button_Clicked" Source="showbutton.png"/>
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Пoдтверждение пароля"  Style="{StaticResource DefLabels}"/>
+                            <Grid>
+                                <Entry x:Name="AgainPasswordEntry"
+                            IsPassword="True" Style="{StaticResource EntriesStyle}"/>
+                                <ImageButton x:Name="ISVisiblePassword_button2" Style="{StaticResource ShowButton}"
+                            Clicked="ISVisiblePassword_button_Clicked" Source="showbutton.png"/>
+                            </Grid>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+
+                    <!-- contin -->
+                    <Button x:Name="ContinueRegistration_button" Clicked="ContinueRegistration_button_Clicked"
+                        Text="Далее" Style="{StaticResource ContinueStyle}" />
+
+                    <!-- link to login -->
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="5" Margin="0,10,0,0">
+
+                        <Label Text="У вас уже есть учетная запись?" FontSize="14" TextColor="{StaticResource MiniText}"/>
+                        <Label Text="Войти" FontSize="14" TextColor="{StaticResource LinksColor}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="Login_button_Clicked"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+
+                    </StackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+    </VerticalStackLayout>
+</ContentPage>

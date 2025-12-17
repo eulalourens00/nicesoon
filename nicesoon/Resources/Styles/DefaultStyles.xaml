@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Color x:Key="BottomText">#939CC8</Color>
+    
+    <!--градиент на фон-->
+    <LinearGradientBrush x:Key="GradientBackground" EndPoint="1,1">
+        <GradientStop Color="#101429" Offset="0.0" />
+        <GradientStop Color="#131626" Offset="1.0" />
+    </LinearGradientBrush>
+    
+    <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+        <Setter Property="Background" Value="{StaticResource GradientBackground}"/>
+        <Setter Property="Padding" Value="10"/>
+    </Style>
+
+    <!--заголовки-->
+    <Style x:Key="BigLabel" TargetType="Label" ApplyToDerivedTypes="True">
+        <Setter Property="FontSize" Value="22"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="#4A67DD"/>
+    </Style>
+
+    <!--кнопки мелкие -->
+    <Style x:Key="InfoButton" TargetType="Button">
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="MinimumHeightRequest" Value="45"/>
+        <Setter Property="MaximumWidthRequest" Value="300"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="TextColor" Value="White"/>
+        <Setter Property="BackgroundColor" Value="#1A1D2D"/>
+    </Style>
+
+    <!--кнопки большие для перехода -->
+    <Style x:Key="AnotherFrame" TargetType="Frame">
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="MinimumHeightRequest" Value="145"/>
+        <Setter Property="MaximumWidthRequest" Value="300"/>
+        <Setter Property="BackgroundColor" Value="#2A3148"/>
+        <Setter Property="BorderColor" Value="Transparent"/>
+    </Style>
+    
+    <!--mini text button-->
+    <Style x:Key="HeaderText" TargetType="Label">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="HorizontalTextAlignment" Value="Start"/>
+        <Setter Property="TextColor" Value="White"/>
+    </Style>
+    
+    <Style x:Key="DiscriptionText" TargetType="Label">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="LineBreakMode" Value="WordWrap"/>
+        <Setter Property="MaxLines" Value="4"/>
+        <Setter Property="TextColor" Value="#939CC8"/>
+    </Style>
+
+    <Style x:Key="IconImage" TargetType="Image">
+        <Setter Property="Aspect" Value="AspectFill"/>
+        <Setter Property="HorizontalOptions" Value="Start"/>
+        <Setter Property="HeightRequest" Value="30"/>
+        <Setter Property="WidthRequest" Value="30"/>
+    </Style>
+
+    <Style x:Key="Caplya" TargetType="Image">
+        <Setter Property="MinimumHeightRequest" Value="150"/>
+        <Setter Property="MinimumWidthRequest" Value="150"/>
+        <Setter Property="MaximumHeightRequest" Value="300"/>
+        <Setter Property="MaximumWidthRequest" Value="300"/>
+        <Setter Property="Aspect" Value="AspectFill"/>
+    </Style>
+</ResourceDictionary>
