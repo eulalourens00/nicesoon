@@ -4,7 +4,7 @@
              xmlns:draw="http://schemas.appomobi.com/drawnUi/2023/draw"
              x:Class="nicesoon.MainPage"
              Background="{StaticResource GradientBackground}">
-
+    
     <ScrollView>
         <VerticalStackLayout Padding="10">
         <!--верхняя плашка-->
@@ -58,7 +58,7 @@
                     <Label Text="Дневник кошмаров" Style="{StaticResource HeaderText}"/>
 
                     <Label Text="Запишите свой сон, чтобы отпустить его. 
-                               Анализируйте символы и находите скрытые смыслы в безопасном пространстве."
+                               Анализируйте в безопасном пространстве."
                               Style="{StaticResource DiscriptionText}"/>
                 </VerticalStackLayout>
             </Frame>
