@@ -2,11 +2,77 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="nicesoon.Pages.ChatNicesoon"
-             Title="ChatNicesoon">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             >
+
+    <Grid RowDefinitions="*, Auto">
+
+        <!-- чат -->
+        <CollectionView Grid.Row="0" ItemsSource="{Binding Messages}" VerticalScrollBarVisibility="Always">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="7" CornerRadius="15" BackgroundColor="{Binding IsUser,
+                        Converter={StaticResource MessageBackgroundConverter}}" HorizontalOptions="{Binding IsUser, 
+                                        Converter={StaticResource MessageAlignmentConverter}}" Margin="10">
+
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="{Binding Text}" LineBreakMode="WordWrap"
+                                   TextColor="{Binding IsUser, Converter={StaticResource MessageTextColorConverter}}" />
+
+                            <Label Text="{Binding DisplayTime}" FontSize="10" TextColor="#888888" HorizontalOptions="End"/>
+                        </VerticalStackLayout>
+
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+        <!-- плажка для поста -->
+        <Grid Grid.Row="1" Padding="10" BackgroundColor="#1A1F2E" RowSpacing="10"
+              RowDefinitions="Auto, Auto">
+
+            <Grid ColumnDefinitions="*, Auto" 
+                  Grid.Row="0">
+
+                <Grid RowDefinitions="*, auto" RowSpacing="10">
+                    <Entry Text="{Binding UserInput}" Placeholder="Напишите о своем сне..."
+                       ReturnCommand="{Binding SendMessageCommand}" BackgroundColor="#2A3148" TextColor="White"
+                       PlaceholderColor="#666666" Grid.Column="0"/>
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="5" Grid.Row="1">
+                        <Button Text="Соединение" MaximumWidthRequest="190" MinimumHeightRequest="45"
+                                 Command="{Binding SwitchToRealApiCommand}" LineBreakMode="WordWrap"
+                                 IsEnabled="{Binding IsSending, Converter={StaticResource InverseBoolConverter}}"
+                                 BackgroundColor="Transparent" TextColor="#4CAF50" BorderColor="#4CAF50" BorderWidth="1"
+                                 Grid.Column="0"/>
+
+                        <Button Text="Очистить чат" VerticalOptions="Start"
+                                Command="{Binding ClearChatCommand}"
+                                BackgroundColor="Transparent"
+                                TextColor="#939CC8" BorderColor="#939CC8"
+                                BorderWidth="1" Grid.Column="1"/>
+                    </Grid>
+
+                </Grid>
+
+
+                <Grid RowDefinitions="*, *" RowSpacing="10" Grid.Column="1">
+                    <ImageButton Source="send.png" Command="{Binding SendMessageCommand}"
+                        IsEnabled="{Binding IsSending, Converter={StaticResource InverseBoolConverter}}"
+                        WidthRequest="50" CornerRadius="25" Margin="5,0,0,0"
+                                 Grid.Row="0" />
+
+                    <ActivityIndicator IsRunning="{Binding IsSending}" WidthRequest="30"
+                                   IsVisible="{Binding IsSending}" HorizontalOptions="Center"
+                                   Color="White" VerticalOptions="Center" Grid.Row="1"/>
+                </Grid>
+
+
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+   
 </ContentPage>

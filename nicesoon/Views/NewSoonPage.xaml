@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:nicesoon.Models"
+             x:Class="nicesoon.Views.NewSoonPage">
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Название сна" FontSize="14" TextColor="White"/>
+                <Entry Text="{Binding Title}" Placeholder="О чем был сон?"
+                       BackgroundColor="#2A3148"  TextColor="White"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Описание" FontSize="14" TextColor="White"/>
+                <Editor Text="{Binding Content}" HeightRequest="200"
+                        AutoSize="TextChanges" 
+                        BackgroundColor="#2A3148" TextColor="White"
+                        Placeholder="Подробно опишите что происходило..."/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Уровень тревоги после сна" FontSize="14"  TextColor="White"/>
+
+                <StackLayout Orientation="Horizontal" Spacing="15">
+                    <Button Text="Низкая" TextColor="White"
+                            BackgroundColor="{Binding AnxietyLevel, Converter={StaticResource AnxietyButtonColorConverter}, ConverterParameter=Low}"
+                            Command="{Binding SetAnxietyCommand}"
+                            CommandParameter="{x:Static models:AnxietyLevel.Low}"/>
+
+                    <Button Text="Средняя" TextColor="White"
+                            BackgroundColor="{Binding AnxietyLevel, Converter={StaticResource AnxietyButtonColorConverter}, ConverterParameter=Medium}"
+                            Command="{Binding SetAnxietyCommand}"
+                            CommandParameter="{x:Static models:AnxietyLevel.Medium}"/>
+
+                    <Button Text="Высокая" TextColor="White"
+                            BackgroundColor="{Binding AnxietyLevel, Converter={StaticResource AnxietyButtonColorConverter}, ConverterParameter=High}"
+                            Command="{Binding SetAnxietyCommand}"
+                            CommandParameter="{x:Static models:AnxietyLevel.High}"/>
+                </StackLayout>
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,20,0,0">
+                <Button Text="Отмена"  Grid.Column="0" BackgroundColor="#8c1531" TextColor="White"
+                        Command="{Binding CancelCommand}"/>
+                <Button Text="Сохранить"  Grid.Column="1" BackgroundColor="#4A67DD" TextColor="White"
+                        Command="{Binding SaveCommand}"/>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

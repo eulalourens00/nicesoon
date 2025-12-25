@@ -1,12 +1,107 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="nicesoon.Pages.NotesNightmares"
-             Title="NotesNightmares">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             xmlns:models="clr-namespace:nicesoon.Models;assembly=nicesoon"
+             xmlns:viewmodels="clr-namespace:nicesoon.ViewModels;assembly=nicesoon"
+             xmlns:converters="clr-namespace:nicesoon.Converters;assembly=nicesoon"
+             x:Class="nicesoon.Pages.NotesNightmares">
+
+    <ContentPage.Resources>
+        <converters:AnxietyFilterColorConverter x:Key="AnxietyFilterColorConverter" />
+        <converters:AnxietyToColorConverter x:Key="AnxietyColorConverter" />
+    </ContentPage.Resources>
+
+
+    <Grid RowDefinitions="Auto, Auto, *">
+
+        <!-- уровень тревоги -->
+        <ScrollView Grid.Row="1" Orientation="Horizontal">
+            <StackLayout Orientation="Horizontal" Spacing="10" Margin="10">
+                <Button Text="Все" 
+                        Command="{Binding ClearFilterCommand}"
+                        BackgroundColor="{Binding SelectedFilter, 
+                            Converter={StaticResource AnxietyFilterColorConverter}, 
+                            ConverterParameter=null}"/>
+                <Button Text="Низкая" 
+                        Command="{Binding FilterByAnxietyCommand}"
+                        CommandParameter="{x:Static models:AnxietyLevel.Low}"
+                        BackgroundColor="{Binding SelectedFilter, 
+                            Converter={StaticResource AnxietyFilterColorConverter}, 
+                            ConverterParameter={x:Static models:AnxietyLevel.Low}}"/>
+                <Button Text="Средняя" 
+                        Command="{Binding FilterByAnxietyCommand}"
+                        CommandParameter="{x:Static models:AnxietyLevel.Medium}"
+                        BackgroundColor="{Binding SelectedFilter, 
+                            Converter={StaticResource AnxietyToColorConverter}, 
+                            ConverterParameter={x:Static models:AnxietyLevel.Medium}}"/>
+                <Button Text="Высокая" 
+                        Command="{Binding FilterByAnxietyCommand}"
+                        CommandParameter="{x:Static models:AnxietyLevel.High}"
+                        BackgroundColor="{Binding SelectedFilter, 
+                            Converter={StaticResource AnxietyToColorConverter}, 
+                            ConverterParameter={x:Static models:AnxietyLevel.High}}"/>
+            </StackLayout>
+        </ScrollView>
+
+        <!--  сны -->
+        <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredNightmares}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="10" ColumnDefinitions="*, *" ColumnSpacing="10">
+
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryViewModel}}, 
+                                         Path=OpenRecordCommand}"
+                                CommandParameter="{Binding .}"/>
+                        </Grid.GestureRecognizers>
+                        
+                        <StackLayout Grid.Column="0" Spacing="5">
+
+                            <!-- заголовок и уровень тревоги -->
+                            <HorizontalStackLayout Spacing="10">
+                                <Label Text="{Binding Title}" 
+                                       FontSize="16" 
+                                       FontAttributes="Bold"/>
+                                <Label Text="{Binding AnxietyIcon}" 
+                                       FontSize="14"
+                                       TextColor="{Binding RecordAnxietyLevel, 
+                                                 Converter={StaticResource AnxietyColorConverter}}"/>
+                            </HorizontalStackLayout>
+
+                            <Label Text="{Binding FormattedDate}" 
+                                   FontSize="12" 
+                                   TextColor="Gray"/>
+                            <Label Text="{Binding ShortContent}" 
+                                   FontSize="14" 
+                                   LineBreakMode="WordWrap"
+                                   MaxLines="2"/>
+                        </StackLayout>
+
+                        <ImageButton Grid.Column="1"
+                                     HorizontalOptions="End"
+                                     Source="default_pic.jpg"
+                                     HeightRequest="80"
+
+                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryViewModel}}, 
+                                              Path=EditRecordCommand}"
+                                     CommandParameter="{Binding .}"/>
+
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <!-- записей нет -->
+            <CollectionView.EmptyView>
+                <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="40">
+                    <Label Text="Записей пока нет"  FontSize="18" TextColor="Gray" HorizontalOptions="Center"/>
+                </StackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <ImageButton Grid.Row="1" Source="plus.png" CornerRadius="24"
+                WidthRequest="40" HeightRequest="30" HorizontalOptions="End" Margin="0,0,-10,0"
+                Command="{Binding AddRecordCommand}"/>
+        
+    </Grid>
 </ContentPage>

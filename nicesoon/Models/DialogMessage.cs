@@ -19,7 +19,7 @@ namespace nicesoon.Models
         [Indexed]
         public int RecordId { get; set; }
 
-        public string Role { get; set; } // "user", "assistant"
+        public string Role { get; set; } 
         public string Content { get; set; }
         public DateTime TimeStamp { get; set; }
 

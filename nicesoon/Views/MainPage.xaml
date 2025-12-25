@@ -2,9 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:draw="http://schemas.appomobi.com/drawnUi/2023/draw"
+             xmlns:viewmodels="clr-namespace:nicesoon.ViewModels"
              x:Class="nicesoon.MainPage"
              Background="{StaticResource GradientBackground}">
-    
+
     <ScrollView>
         <VerticalStackLayout Padding="10">
         <!--верхняя плашка-->
@@ -30,10 +31,16 @@
                    TextColor="{StaticResource BottomText}" />
 
             <Grid RowSpacing="10" RowDefinitions="*, *">
-                <Button Text="Начать путь" Style="{StaticResource InfoButton}" BackgroundColor="#1430B8" Grid.Row="0"
-                        Clicked="Auth_ButtonClicked"/>
-                <Button Text="Как это работает" Style="{StaticResource InfoButton}" Grid.Row="1"/>
-            </Grid>
+                    <Button Text="Начать путь" 
+                            Style="{StaticResource InfoButton}" 
+                            BackgroundColor="#1430B8" 
+                            Grid.Row="0"
+                            Command="{Binding OpenDiaryCommand}"/>
+                    <Button Text="Как это работает" 
+                            Style="{StaticResource InfoButton}" 
+                            Grid.Row="1"
+                            Command="{Binding OpenChatCommand}"/>
+                </Grid>
         </VerticalStackLayout>
 
         <Grid RowSpacing="10" VerticalOptions="Center" Padding="10">
@@ -46,8 +53,8 @@
             <Frame Style="{StaticResource AnotherFrame}" Grid.Row="0">
 
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnDiary_Tapped"/>
-                </Frame.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenDiaryCommand}"/>
+                 </Frame.GestureRecognizers>
                 
                 <VerticalStackLayout Spacing="5" Padding="10">
 
@@ -66,7 +73,7 @@
             <Frame Style="{StaticResource AnotherFrame}" Grid.Row="1">
 
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnNicesoon_Tapped"/>
+                    <TapGestureRecognizer Command="{Binding OpenChatCommand}"/>
                 </Frame.GestureRecognizers>
                 
                 <VerticalStackLayout Spacing="5" Padding="10">
@@ -83,8 +90,17 @@
                 </VerticalStackLayout>
             </Frame>
         </Grid>
-        
-        
-    </VerticalStackLayout>
+
+            <Grid IsVisible="{Binding IsLoggedIn}"  Margin="0,20">
+                <Button Text="Выйти" 
+                        Command="{Binding LogoutCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="#8c1531"
+                        BorderColor="#8c1531"
+                        BorderWidth="1"
+                        CornerRadius="10"
+                        HeightRequest="40" />
+            </Grid>
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

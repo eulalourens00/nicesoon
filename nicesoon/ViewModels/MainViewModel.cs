@@ -1,140 +1,91 @@
-﻿using AndroidX.Navigation;
+﻿using nicesoon.Models;
 using nicesoon.Pages;
+using nicesoon.Pages.AuthPages;
+using nicesoon.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using nicesoon.Models;
-using nicesoon.Services;
 
 namespace nicesoon.ViewModels
 {
-    public class MainViewModel: BaseViewModel
+    public class MainViewModel : BaseViewModel
     {
-        //private bool _isBusy;
-        //public bool isBusy
-        //{
-        //    get => _isBusy;
-        //    set => SetProperty(ref _isBusy, value);
-        //}
-
-        //public ICommand LoginCommand { get; }
-        //public ICommand GoToDiaryCommand { get; }
-
-        //public MainViewModel()
-        //{
-        //    LoginCommand = new Command(async () => await LoginAsync());
-        //    GoToDiaryCommand = new Command(async () => await GoToDiaryAsync());
-        //}
-
-        //private async Task LoginAsync()
-        //{
-        //    isBusy = true;
-        //}
-
-        //private async Task GoToDiaryAsync()
-        //{
-        //    await Shell.Current.GoToAsync("//diary");
-        //}
-
+        private readonly AuthService _authService;
         private User _currentUser;
-        private bool _isLoggedIn;
-        private string _welcomeMessage;
 
-        // Свойства (связываются с View)
         public User CurrentUser
         {
             get => _currentUser;
             set => SetProperty(ref _currentUser, value);
         }
 
-        public bool IsLoggedIn
-        {
-            get => _isLoggedIn;
-            set
-            {
-                SetProperty(ref _isLoggedIn, value);
-                OnPropertyChanged(nameof(WelcomeMessage)); // Обновим приветствие
-            }
-        }
+        public bool IsLoggedIn => _authService.IsAuthenticated;
 
-        public string WelcomeMessage
-        {
-            get
-            {
-                if (IsLoggedIn && CurrentUser != null)
-                    return $"Добро пожаловать, {CurrentUser.Username}!";
-                return "Тихая гавань для ваших снов";
-            }
-        }
-
-        // Команды
         public ICommand OpenDiaryCommand { get; }
         public ICommand OpenChatCommand { get; }
         public ICommand LogoutCommand { get; }
 
-        // Сервисы
-        private readonly ApiService _apiService;
-
-        public MainViewModel(ApiService apiService)
+        public MainViewModel(AuthService authService)
         {
-            _apiService = apiService;
+            _authService = authService;
 
-            // Инициализация команд
+            _authService.AuthStateChanged += OnAuthStateChanged;
+
+            LoadCurrentUser();
+
             OpenDiaryCommand = new Command(async () => await OpenDiaryAsync());
             OpenChatCommand = new Command(async () => await OpenChatAsync());
             LogoutCommand = new Command(async () => await LogoutAsync());
-
-            // Загружаем состояние пользователя
-            LoadUserState();
         }
 
-        private async Task LoadUserState()
+        private void OnAuthStateChanged(object sender, EventArgs e)
         {
-            // Проверяем, есть ли сохраненный токен
-            var token = await SecureStorage.GetAsync("auth_token");
-            IsLoggedIn = !string.IsNullOrEmpty(token);
+            LoadCurrentUser();
+            OnPropertyChanged(nameof(IsLoggedIn));
+        }
 
-            if (IsLoggedIn)
-            {
-                // Загружаем данные пользователя
-                CurrentUser = await _apiService.GetCurrentUserAsync();
-            }
+        private void LoadCurrentUser()
+        {
+            CurrentUser = _authService.CurrentUser;
         }
 
         private async Task OpenDiaryAsync()
         {
-            if (!IsLoggedIn)
-            {
-                await Shell.Current.GoToAsync("//login");
-                return;
-            }
+            //if (!IsLoggedIn)
+            //{
+            //    await Application.Current.MainPage.Navigation.PushAsync(
+            //    new LoginPage(ServiceLocator.LoginViewModel));
+            //    return;
+            //}
 
-            await Shell.Current.GoToAsync("//diary");
+            await Application.Current.MainPage.Navigation.PushAsync(
+                new NotesNightmares(ServiceLocator.DiaryViewModel));
         }
 
         private async Task OpenChatAsync()
         {
-            if (!IsLoggedIn)
-            {
-                await Shell.Current.GoToAsync("//login");
-                return;
-            }
-
-            await Shell.Current.GoToAsync("//chat");
+            await Application.Current.MainPage.Navigation.PushAsync(
+                new ChatNicesoon(ServiceLocator.ChatViewModel));
         }
 
         private async Task LogoutAsync()
         {
-            // Очищаем токен
-            SecureStorage.Remove("auth_token");
-            IsLoggedIn = false;
-            CurrentUser = null;
+            bool confirm = await Application.Current.MainPage.DisplayAlert(
+                "Выход",
+                "Вы уверены, что хотите выйти?",
+                "Да", "Нет");
 
-            // Возвращаем на главную
-            await Shell.Current.GoToAsync("//main");
+            if (confirm)
+            {
+                _authService.Logout();
+                await Application.Current.MainPage.Navigation.PushAsync(
+                new LoginPage(ServiceLocator.LoginViewModel));
+            }
         }
+        
     }
 }

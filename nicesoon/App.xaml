@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:nicesoon"
+             xmlns:converters="clr-namespace:nicesoon.Converters"
              x:Class="nicesoon.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -11,6 +12,24 @@
                 
                 <ResourceDictionary Source="Resources/Styles/DefaultStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/DefStylesAuth.xaml"/>
+
+                <ResourceDictionary>
+
+                    <!-- конвертеры -->
+                    <converters:MessageBackgroundConverter x:Key="MessageBackgroundConverter" />
+                    <converters:MessageTextColorConverter x:Key="MessageTextColorConverter" />
+                    <converters:MessageAlignmentConverter x:Key="MessageAlignmentConverter" />
+                    <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+                    <converters:AnxietyToColorConverter x:Key="AnxietyToColorConverter" />
+                    <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+
+                    <Color x:Key="PrimaryBlue">#3B5BDB</Color>
+                    <Color x:Key="DarkBackground">#1A1F2E</Color>
+                    <Color x:Key="CardBackground">#2A3148</Color>
+                    <Color x:Key="LightText">#E0E0E0</Color>
+                    <Color x:Key="AccentColor">#939CC8</Color>
+
+                </ResourceDictionary>
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

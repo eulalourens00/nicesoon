@@ -12,280 +12,131 @@ namespace nicesoon.Services
     public class ApiService
     {
         private readonly HttpClient _httpClient;
-        public readonly LocalStorageService _localStorage;
-        private const string DeepSeekApiUrl = "https://api.deepseek.com/v1/chat/completions";
+        // такое нельзя показывать на гите
+        private readonly string _openRouterApiKey = "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";
 
-        private string _apiKey = "sk-25b37a97fb674de19fb9f07404c00b6c";
+        private const string OpenRouterApiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
-        public ApiService(LocalStorageService localStorage)
+        public ApiService()
         {
             _httpClient = new HttpClient();
-            _localStorage = localStorage;
-
-            // Загружаем сохраненный API ключ
-            LoadApiKeyAsync().Wait();
+            _httpClient.Timeout = TimeSpan.FromSeconds(60);
+            bool hasValidPrefix = _openRouterApiKey.StartsWith("sk-or-v1-");
+            DebugLog($" ApiService создан. Ключ установлен: {hasValidPrefix}");
         }
 
-        // 1. Аутентификация пользователя (локальная, упрощенная)
-        public async Task<User> LoginAsync(string email, string password)
+        public async Task<bool> TestConnectionAsync()
         {
             try
             {
-                // Простая локальная проверка
-                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                    return null;
-
-                await Task.Delay(300); // Небольшая задержка для реалистичности
-
-                var user = new User
+                DebugLog(" Тест подключения: Отправка запроса...");
+                // для проверки
+                var testRequest = new
                 {
-                    Id = 1,
-                    Email = email,
-                    Username = email.Split('@')[0],
-                    Token = "local_token",
-                    CreatedAt = DateTime.Now
+                    model = "tngtech/deepseek-r1t2-chimera:free",
+                    messages = new[] { new { role = "user", content = "Привет" } },
+                    max_tokens = 10
                 };
 
-                // Сохраняем пользователя локально
-                await _localStorage.SaveUserLocallyAsync(user);
+                var jsonRequest = JsonSerializer.Serialize(testRequest);
+                var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                return user;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка входа: {ex.Message}");
-                return null;
-            }
-        }
-
-        // 2. Регистрация (локальная)
-        public async Task<User> RegisterAsync(string username, string email, string password)
-        {
-            try
-            {
-                // Простая проверка
-                if (string.IsNullOrWhiteSpace(username) ||
-                    string.IsNullOrWhiteSpace(email) ||
-                    string.IsNullOrWhiteSpace(password))
-                    return null;
-
-                await Task.Delay(300);
-
-                var user = new User
+                if (!_httpClient.DefaultRequestHeaders.Contains("Authorization"))
                 {
-                    Id = new Random().Next(1000, 9999),
-                    Email = email,
-                    Username = username,
-                    Token = "local_token",
-                    CreatedAt = DateTime.Now
-                };
-
-                await _localStorage.SaveUserLocallyAsync(user);
-                return user;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка регистрации: {ex.Message}");
-                return null;
-            }
-        }
-
-        // 3. ГЛАВНОЕ: Отправка сообщения DeepSeek API
-        public async Task<string> SendToDeepSeekAsync(string message, string context = "")
-        {
-            try
-            {
-                // Проверка ключа
-                if (string.IsNullOrEmpty(_apiKey) || _apiKey == "sk-ваш_настоящий_ключ_здесь")
-                {
-                    // Если забыли вставить ключ, возвращаем тестовый ответ
-                    await Task.Delay(800);
-                    return @"🦩 **Найсон** (тестовый режим): 
-
-Я вижу, что вы описываете сон. В тестовом режиме я не могу подключиться к AI.
-
-Для полноценной работы:
-1. Замените 'sk-ваш_настоящий_ключ_здесь' в ApiService.cs на ваш реальный ключ
-2. Ключ можно получить на platform.deepseek.com
-
-А пока пример анализа:
-• Тревожные сны часто связаны с дневными переживаниями
-• Запись сна уже уменьшает его воздействие
-• Попробуйте вести дневник снов регулярно
-
-Как вы себя чувствуете после этого сна?";
+                    _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_openRouterApiKey}");
                 }
+                //на статистику. пофиг
+                _httpClient.DefaultRequestHeaders.Add("HTTP-Referer", "https://nicesoon.app");
+                _httpClient.DefaultRequestHeaders.Add("X-Title", "NiceSoon");
 
-                // Подготовка системного промпта
-                var systemPrompt = @"Ты - Найсон, AI-ассистент для анализа кошмаров. Твой тон: поддерживающий, эмпатичный. Формат ответа:
-1. Короткое сочувствие
-2. Анализ 2-3 ключевых символов
-3. Один вопрос для рефлексии
-4. Поддерживающее завершение
+                var response = await _httpClient.PostAsync(OpenRouterApiUrl, content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+                DebugLog($" Тест подключения. Статус: {response.StatusCode}. Ответ: {responseBody}");
 
-Не давай медицинских советов.";
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                DebugLog($" Тест подключения. Ошибка: {ex.Message}");
+                return false;
+            }
+        }
 
+        public async Task<string> SendToAIAsync(string userMessage)
+        {
+            try
+            {
+                DebugLog($" Отправка сообщения: '{userMessage.Substring(0, Math.Min(userMessage.Length, 50))}...'");
+
+                var systemPrompt = @"Ты - Найсон, AI-ассистент для анализа кошмаров. Отвечай подробно на русском.";
                 var messages = new List<object>
                 {
                     new { role = "system", content = systemPrompt },
-                    new { role = "user", content = message }
+                    new { role = "user", content = userMessage }
                 };
 
-                if (!string.IsNullOrEmpty(context))
+                var requestData = new
                 {
-                    messages.Insert(1, new { role = "assistant", content = $"Контекст: {context}" });
-                }
-
-                var request = new
-                {
-                    model = "deepseek-chat",
+                    model = "tngtech/deepseek-r1t2-chimera:free",
                     messages = messages,
                     temperature = 0.7,
-                    max_tokens = 800
+                    max_tokens = 1500,
+                    stream = false
                 };
 
-                var jsonRequest = JsonSerializer.Serialize(request);
+                var jsonRequest = JsonSerializer.Serialize(requestData);
                 var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                _httpClient.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _apiKey);
-
-                var response = await _httpClient.PostAsync(DeepSeekApiUrl, content);
+                var response = await _httpClient.PostAsync(OpenRouterApiUrl, content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+                DebugLog($" Ответ API. Статус: {response.StatusCode}. Тело: {responseBody}");
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-
-                    using var doc = JsonDocument.Parse(jsonResponse);
+                    using var doc = JsonDocument.Parse(responseBody);
                     var aiResponse = doc.RootElement
                         .GetProperty("choices")[0]
                         .GetProperty("message")
                         .GetProperty("content")
                         .GetString();
 
-                    return aiResponse;
+                    DebugLog($" Успешный ответ получен.");
+                    return aiResponse?.Trim() ?? "ИИ не вернул текст.";
                 }
                 else
                 {
-                    return $"❌ Ошибка API ({response.StatusCode}). Проверьте ключ и баланс.";
+                    // ошибки. я скоро разобью монитор
+                    string errorMessage = response.StatusCode switch
+                    {
+                        System.Net.HttpStatusCode.Unauthorized => " Неверный API ключ",
+                        System.Net.HttpStatusCode.PaymentRequired => " Недостаточно монеток на счету",
+                        System.Net.HttpStatusCode.TooManyRequests => " Слишком много запросов",
+                        System.Net.HttpStatusCode.NotFound => " Модель не найдена или не поддерживает параметры",
+                        _ => $" Ошибка API ({response.StatusCode})"
+                    };
+                    DebugLog($" {errorMessage}");
+                    return $"{errorMessage}\n(Ответ сервера: {responseBody})";
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка: {ex.Message}");
-                return $"⚠️ Сетевая ошибка: {ex.Message}";
+                DebugLog($" Исключение в SendToAIAsync: {ex.Message}");
+                return $" Сетевая ошибка: {ex.Message}";
             }
         }
 
-        // 4. Сохранить запись сна
-        public async Task<NightmareRecord> SaveRecordAsync(NightmareRecord record)
+        // тест 
+        public async Task<string> SendToAITestAsync(string userMessage)
         {
-            try
-            {
-                record.Id = new Random().Next(1000, 9999);
-                record.CreatedAt = DateTime.Now;
-
-                var records = await _localStorage.LoadRecordsLocallyAsync();
-                records.Add(record);
-
-                await _localStorage.SaveRecordsLocallyAsync(records);
-                return record;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка сохранения: {ex.Message}");
-                return null;
-            }
+            await Task.Delay(1200);
+            var responses = new[] { "**Найсон** (тест): Я понимаю...", "**Найсон** (тест): Интересный сон..." };
+            return responses[new Random().Next(responses.Length)];
         }
 
-        // 5. Получить все записи
-        public async Task<List<NightmareRecord>> GetRecordsAsync()
+        private void DebugLog(string message)
         {
-            var records = await _localStorage.LoadRecordsLocallyAsync();
-
-            // Если нет записей, создаем примеры для демонстрации
-            if (!records.Any())
-            {
-                records = new List<NightmareRecord>
-                {
-                    new NightmareRecord
-                    {
-                        Id = 1,
-                        Title = "Бег в темноте",
-                        Content = "Мне снилось, что я бегу по темному коридору, а за мной кто-то гонится. Я не мог разглядеть кто это, но чувствовал сильный страх.",
-                        RecordDate = DateTime.Now.AddDays(-2),
-                        CreatedAt = DateTime.Now.AddDays(-2),
-                        Emotions = new List<string> { "страх", "тревога" }
-                    },
-                    new NightmareRecord
-                    {
-                        Id = 2,
-                        Title = "Падение с высоты",
-                        Content = "Я стоял на краю высотного здания и вдруг начал падать. Проснулся в холодном поту.",
-                        RecordDate = DateTime.Now.AddDays(-1),
-                        CreatedAt = DateTime.Now.AddDays(-1),
-                        Emotions = new List<string> { "паника", "беспомощность" }
-                    }
-                };
-
-                await _localStorage.SaveRecordsLocallyAsync(records);
-            }
-
-            return records;
-        }
-
-        // 6. Удалить запись
-        public async Task<bool> DeleteRecordAsync(int recordId)
-        {
-            try
-            {
-                var records = await _localStorage.LoadRecordsLocallyAsync();
-                var record = records.FirstOrDefault(r => r.Id == recordId);
-
-                if (record != null)
-                {
-                    records.Remove(record);
-                    await _localStorage.SaveRecordsLocallyAsync(records);
-                    return true;
-                }
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка удаления: {ex.Message}");
-                return false;
-            }
-        }
-
-        // 7. Анализировать запись
-        public async Task<string> AnalyzeRecordAsync(NightmareRecord record)
-        {
-            var prompt = $"Проанализируй этот сон: {record.Content}\n\n" +
-                        $"Эмоции: {(record.Emotions != null ? string.Join(", ", record.Emotions) : "не указаны")}";
-
-            return await SendToDeepSeekAsync(prompt);
-        }
-
-        // 8. Получить пользователя
-        public async Task<User> GetCurrentUserAsync()
-        {
-            var user = await _localStorage.LoadUserLocallyAsync();
-
-            // Если нет пользователя, создаем демо
-            if (user == null)
-            {
-                user = new User
-                {
-                    Id = 1,
-                    Email = "demo@example.com",
-                    Username = "Демо-пользователь",
-                    Token = "demo_token",
-                    CreatedAt = DateTime.Now
-                };
-            }
-
-            return user;
+            Console.WriteLine($"[ApiService] {DateTime.Now:HH:mm:ss} - {message}");
+            System.Diagnostics.Debug.WriteLine($"[ApiService] {message}");
         }
     }
 }

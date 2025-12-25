@@ -23,27 +23,24 @@ namespace nicesoon
     		builder.Logging.AddDebug();
 #endif
 
-            // сервисы
-            builder.Services.AddSingleton<LocalStorageService>();
+            // services
+            builder.Services.AddSingleton<DatabaseService>();
+            builder.Services.AddSingleton<AuthService>();
             builder.Services.AddSingleton<ApiService>();
 
-            // ViewModels
-            builder.Services.AddTransient<MainViewModel>();
+            // viewmodels
             builder.Services.AddTransient<LoginViewModel>();
+            builder.Services.AddTransient<RegistrationViewModel>();
+            builder.Services.AddTransient<MainViewModel>();
             builder.Services.AddTransient<DiaryViewModel>();
             builder.Services.AddTransient<ChatViewModel>();
 
-            // Views
-            builder.Services.AddTransient<MainPage>();
+            // views
             builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddTransient<RegistrationPage>();
+            builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<NotesNightmares>();
             builder.Services.AddTransient<ChatNicesoon>();
-
-            // маршруты
-            Routing.RegisterRoute("//main", typeof(MainPage));
-            Routing.RegisterRoute("//login", typeof(LoginPage));
-            Routing.RegisterRoute("//diary", typeof(NotesNightmares));
-            Routing.RegisterRoute("//chat", typeof(ChatNicesoon));
 
             return builder.Build();
         }

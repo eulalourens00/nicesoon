@@ -1,32 +1,18 @@
 ﻿using nicesoon.Pages;
 using nicesoon.Pages.AuthPages;
+using nicesoon.ViewModels;
+using nicesoon.Services;
 
 namespace nicesoon
 {
     public partial class MainPage : ContentPage
     {
 
-        public MainPage()
+        public MainPage(MainViewModel viewmodel)
         {
             InitializeComponent();
-        }
-
-        private void Auth_ButtonClicked(object sender, EventArgs e)
-        {
-            Navigation.PushAsync(new LoginPage());
-        }
-
-        private void OnDiary_Tapped(object sender, TappedEventArgs e)
-        {
-            Navigation.PushAsync(new NotesNightmares());
-        }
-
-        private void OnNicesoon_Tapped(object sender, TappedEventArgs e)
-        {
-            Navigation.PushAsync(new ChatNicesoon());
-        }
-
-       
+            BindingContext = ServiceLocator.MainViewModel;
+        }       
     }
 
 }

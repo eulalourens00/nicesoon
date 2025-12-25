@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:nicesoon.ViewModels"
              x:Class="nicesoon.Pages.AuthPages.LoginPage">
+
     <VerticalStackLayout>
         <Grid VerticalOptions="Center" HorizontalOptions="Center">
             <Frame Style="{StaticResource FrameStyle}">
@@ -15,7 +17,7 @@
                         <!-- phone -->
                         <VerticalStackLayout Spacing="5">
                             <Label Text="Телефон" Style="{StaticResource DefLabels2}"/>
-                            <Entry TextChanged="OnPhoneChanhed2" Style="{StaticResource EntriesStyle}" Text="+7"/>
+                            <Entry Text="{Binding Phone}" Style="{StaticResource EntriesStyle}"/>
                         </VerticalStackLayout>
 
                         <!-- passw -->
@@ -30,27 +32,29 @@
                                 <Label x:Name="ForgetPassword" Text="Забыли?" TextColor="{StaticResource LinksColor}" 
                                    Style="{StaticResource DefLabels2}" HorizontalOptions="End" Grid.Column="1">
                                     <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="ForgotPassword_Tapped"/>
+                                        <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}"/>
                                     </Label.GestureRecognizers>
                                 </Label>
                             </Grid>
-
+                            
                             <Grid>
-                                <Entry x:Name="LoginPasswordEntry" IsPassword="True"
-                            Style="{StaticResource EntriesStyle}"/>
+                                <Entry Text="{Binding Password}" 
+                                       IsPassword="{Binding IsPasswordVisible, Converter={StaticResource InverseBoolConverter}}"
+                                       Style="{StaticResource EntriesStyle}"/>
 
-                                <ImageButton x:Name="LoginISVisiblePassword_button" Source="showbutton.png"
-                                         Clicked="LoginISVisiblePassword_button_Clicked"
+                                <ImageButton Source="showbutton.png"
+                                             Command="{Binding TogglePasswordCommand}"
+                                             Style="{StaticResource ShowButton2}"/>
                                          
-                            Style="{StaticResource ShowButton2}"/>
                             </Grid>
                         </VerticalStackLayout>
 
                     </VerticalStackLayout>
 
                     <!-- to main page -->
-                    <Button x:Name="Login_button" Clicked="Login_button_Clicked"
-                    Text="Войти" Style="{StaticResource ButtonStyle}"/>
+                    <Button Command="{Binding LoginCommand}" 
+                            Text="Войти" 
+                            Style="{StaticResource ButtonStyle}"/>
 
                     <!-- link to regist -->
                     <StackLayout Orientation="Horizontal" HorizontalOptions="Center"  Spacing="5" Margin="0,10,0,0">
@@ -58,7 +62,7 @@
                         <Label Text="Зарегистрироваться" FontSize="14" TextColor="{StaticResource LinksColor}">
                             
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="Register_label_Clicked"/>
+                                <TapGestureRecognizer Command="{Binding RegisterCommand}"/>
                             </Label.GestureRecognizers>
                         </Label>
                         
@@ -66,6 +70,17 @@
 
                 </VerticalStackLayout>
             </Frame>
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" 
+                           IsVisible="{Binding IsLoading}" 
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+
+            <Label Text="{Binding ErrorMessage}" 
+               TextColor="#8c1531" HorizontalOptions="Center"
+               IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"
+                />
+
         </Grid>
     </VerticalStackLayout>
 </ContentPage>
