@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text;
 using System.Text.Json;
-using nicesoon.Models;  
+using nicesoon.Models;
+
 
 namespace nicesoon.Services
 {
     public class ApiService
     {
         private readonly HttpClient _httpClient;
-        // такое нельзя показывать на гите
-        private readonly string _openRouterApiKey = "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";
+        private readonly string _openRouterApiKey;
 
         private const string OpenRouterApiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -21,15 +20,16 @@ namespace nicesoon.Services
         {
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(60);
-            bool hasValidPrefix = _openRouterApiKey.StartsWith("sk-or-v1-");
-            DebugLog($" ApiService создан. Ключ установлен: {hasValidPrefix}");
+
+            _openRouterApiKey = Secrets.OpenRouterApiKey;
+
         }
 
         public async Task<bool> TestConnectionAsync()
         {
             try
             {
-                DebugLog(" Тест подключения: Отправка запроса...");
+                DebugLog("ТЕСТ ПОДКЛЮЧЕНИЯ : Отправка запроса...");
                 // для проверки
                 var testRequest = new
                 {
@@ -45,7 +45,7 @@ namespace nicesoon.Services
                 {
                     _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_openRouterApiKey}");
                 }
-                //на статистику. пофиг
+                //на статистику
                 _httpClient.DefaultRequestHeaders.Add("HTTP-Referer", "https://nicesoon.app");
                 _httpClient.DefaultRequestHeaders.Add("X-Title", "NiceSoon");
 
@@ -57,7 +57,7 @@ namespace nicesoon.Services
             }
             catch (Exception ex)
             {
-                DebugLog($" Тест подключения. Ошибка: {ex.Message}");
+                DebugLog($" Тест подключения. ОШИБКА: {ex.Message}");
                 return false;
             }
         }
