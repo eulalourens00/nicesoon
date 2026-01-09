@@ -22,7 +22,6 @@ namespace nicesoon.Services
             _httpClient.Timeout = TimeSpan.FromSeconds(60);
 
             _openRouterApiKey = Secrets.OpenRouterApiKey;
-
         }
 
         public async Task<bool> TestConnectionAsync()
